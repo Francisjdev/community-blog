@@ -25,8 +25,10 @@ func main() {
 	defer db.Close()
 	dbQueries := database.New(db)
 	userServ := service.NewUserService(dbQueries)
+	postServ := service.NewPostService(dbQueries)
 	nService := service.Services{
 		Users: userServ,
+		Posts: postServ,
 	}
 	app := app.Application{
 		Config:  cfg,

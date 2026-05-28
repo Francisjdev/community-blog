@@ -35,3 +35,49 @@ func (s *UserService) RegisterUser(ctx context.Context, arg database.CreateUserP
 	return database.User{}, err
 
 }
+func (s *UserService) Login(ctx context.Context, email string, password string, key string) (accessToken string, refreshToken string, error error) {
+	existingUser, err := s.store.GetUserByEmail(ctx, email)
+	if err != nil {
+		log.Printf("error %v\n", err)
+		return "", "", err
+	}
+	matchedPass, err := auth.CheckHash(password, existingUser.PasswordHash)
+	if err != nil {
+		log.Printf("error: %v\n", err)
+		return "", "", err
+	}
+	if !matchedPass {
+		log.Printf("email or password incorrect: %v\n", err)
+		return "", "", helper.ErrEmailOrPasswordIncorrect
+	}
+	accessToken, err = auth.GenerateJWT(existingUser.ID, existingUser.Role, key)
+	if err != nil {
+		return "", "", err
+	}
+	refreshToken = auth.MakeRefreshToken()
+	// here i need to insert the refresh token into the db
+	hashedRefresh, err := auth.HashPassword(refreshToken)
+	if err != nil {
+		return "", "", err
+	}
+	refreshTokenParams := database.CreateRefreshTokenParams{
+		UserID:    existingUser.ID,
+		TokenHash: hashedRefresh,
+	}
+
+	_, err = s.store.CreateRefreshToken(ctx, refreshTokenParams)
+	if err != nil {
+		log.Printf("error inserting data into db: %v", err)
+		return "", "", err
+	}
+
+	return accessToken, refreshToken, nil
+}
+
+func (s *UserService) DeleteUser(ctx context.Context, email string) error {
+	err := s.store.DeleteUserByEmail(ctx, email)
+	if err != nil {
+		return err
+	}
+	return nil
+}
