@@ -67,3 +67,92 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 	)
 	return i, err
 }
+
+const deleteAllPostByUser = `-- name: DeleteAllPostByUser :exec
+DELETE FROM posts
+WHERE user_id =$1
+`
+
+func (q *Queries) DeleteAllPostByUser(ctx context.Context, userID uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteAllPostByUser, userID)
+	return err
+}
+
+const deletePostById = `-- name: DeletePostById :exec
+DELETE FROM posts
+WHERE id =$1 and user_id = $2
+`
+
+type DeletePostByIdParams struct {
+	ID     uuid.UUID
+	UserID uuid.UUID
+}
+
+func (q *Queries) DeletePostById(ctx context.Context, arg DeletePostByIdParams) error {
+	_, err := q.db.ExecContext(ctx, deletePostById, arg.ID, arg.UserID)
+	return err
+}
+
+const getPostById = `-- name: GetPostById :one
+SELECT id, title, slug, markdown_content, meta_description, cover_image_url, youtube_links, published_at, user_id, created_at, updated_at FROM posts
+WHERE id = $1
+`
+
+func (q *Queries) GetPostById(ctx context.Context, id uuid.UUID) (Post, error) {
+	row := q.db.QueryRowContext(ctx, getPostById, id)
+	var i Post
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Slug,
+		&i.MarkdownContent,
+		&i.MetaDescription,
+		&i.CoverImageUrl,
+		&i.YoutubeLinks,
+		&i.PublishedAt,
+		&i.UserID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const listAllPostsByUser = `-- name: ListAllPostsByUser :many
+SELECT id, title, slug, markdown_content, meta_description, cover_image_url, youtube_links, published_at, user_id, created_at, updated_at FROM posts
+WHERE user_id = $1
+`
+
+func (q *Queries) ListAllPostsByUser(ctx context.Context, userID uuid.UUID) ([]Post, error) {
+	rows, err := q.db.QueryContext(ctx, listAllPostsByUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Post
+	for rows.Next() {
+		var i Post
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Slug,
+			&i.MarkdownContent,
+			&i.MetaDescription,
+			&i.CoverImageUrl,
+			&i.YoutubeLinks,
+			&i.PublishedAt,
+			&i.UserID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

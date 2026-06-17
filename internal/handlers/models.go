@@ -29,3 +29,7 @@ type postResponse struct {
 	Slug        string       `json:"slug"`
 	PublishedAt sql.NullTime `json:"published_at"`
 }
+
+type deletePostRequest struct {
+	PostId string `json:"post_id"`
+}

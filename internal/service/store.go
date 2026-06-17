@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/francisjdev/community-blog/internal/database"
+	"github.com/google/uuid"
 )
 
 type UserStore interface {
@@ -15,4 +16,8 @@ type UserStore interface {
 
 type PostStore interface {
 	CreatePost(ctx context.Context, arg database.CreatePostParams) (database.Post, error)
+	DeleteAllPostByUser(ctx context.Context, userID uuid.UUID) error
+	DeletePostById(ctx context.Context, arg database.DeletePostByIdParams) error
+	GetPostById(ctx context.Context, id uuid.UUID) (database.Post, error)
+	ListAllPostsByUser(ctx context.Context, userID uuid.UUID) ([]database.Post, error)
 }

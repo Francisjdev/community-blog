@@ -37,7 +37,6 @@ func StringToNullTime(s string) sql.NullTime {
 
 	t, err := time.Parse(layout, s)
 	if err != nil {
-		// Handle the error appropriately; here we return an invalid NullTime
 		return sql.NullTime{Valid: false}
 	}
 
