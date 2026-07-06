@@ -20,4 +20,5 @@ type PostStore interface {
 	DeletePostById(ctx context.Context, arg database.DeletePostByIdParams) error
 	GetPostById(ctx context.Context, id uuid.UUID) (database.Post, error)
 	ListAllPostsByUser(ctx context.Context, userID uuid.UUID) ([]database.Post, error)
+	ListAllPosts(ctx context.Context) ([]database.Post, error)
 }

@@ -13,5 +13,7 @@ func LoadRouter(app *app.Application) *chi.Mux {
 	r.Delete("/api/users", middleware.AuthMiddleware(app, handlers.DeleteUser(app)))
 	r.Post("/api/auth/login", handlers.Login(app))
 	r.Post("/api/posts/create", middleware.AuthMiddleware(app, handlers.RegisterPost(app)))
+	r.Post("/api/posts/deletesinglepost", middleware.AuthMiddleware(app, handlers.DeleteSinglePost(app)))
+	r.Get("/api/posts", handlers.GetPosts(app))
 	return r
 }

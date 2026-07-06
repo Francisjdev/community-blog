@@ -48,3 +48,11 @@ func (s *PostService) DeleteAllPostsByUser(ctx context.Context, userID uuid.UUID
 	}
 	return nil
 }
+func (s *PostService) ListAllPosts(ctx context.Context) ([]database.Post, error) {
+
+	posts, err := s.store.ListAllPosts(ctx)
+	if err != nil {
+		return []database.Post{}, err
+	}
+	return posts, nil
+}

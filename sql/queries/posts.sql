@@ -28,3 +28,6 @@ WHERE id = $1;
 -- name: ListAllPostsByUser :many
 SELECT * FROM posts
 WHERE user_id = $1;
+
+-- name: ListAllPosts :many
+SELECT * FROM posts;
