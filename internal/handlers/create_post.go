@@ -51,13 +51,28 @@ func RegisterPost(app *app.Application) http.HandlerFunc {
 		returnedPostData, err := app.Service.Posts.RegisterPost(r.Context(), registerPostParams)
 		if err != nil {
 			helper.RespondWithError(w, 500, "Error creating post")
-			log.Printf("Error creating user: %s", err)
+			log.Printf("Error creating post: %s", err)
 			return
 		}
+		//add helper for checkers
+		publishedAt := ""
+		if returnedPostData.PublishedAt.Valid {
+			publishedAt = returnedPostData.PublishedAt.Time.String()
+		}
+		youtubeLinks := ""
+		if returnedPostData.YoutubeLinks.Valid {
+			youtubeLinks = string(returnedPostData.YoutubeLinks.RawMessage)
+		}
 		post := postResponse{
-			Title:       returnedPostData.Title,
-			Slug:        returnedPostData.Slug,
-			PublishedAt: returnedPostData.PublishedAt,
+			Title:           returnedPostData.Title,
+			Slug:            returnedPostData.Slug,
+			MarkdownContent: returnedPostData.MarkdownContent,
+			MetaDescription: returnedPostData.MetaDescription.String,
+			CoverImageUrl:   returnedPostData.CoverImageUrl.String,
+			YoutubeLinks:    youtubeLinks,
+			PublishedAt:     publishedAt,
+			UserID:          returnedPostData.UserID.String(),
+			PostID:          returnedPostData.ID.String(),
 		}
 		helper.RespondWithJSON(w, 201, post)
 	}

@@ -9,7 +9,8 @@ function Login() {
   })
   const navigate = useNavigate()
 
-  function handleSubmit() {
+  function handleSubmit(e) {
+    e.preventDefault(e)
     fetch('http://localhost:8080/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -21,23 +22,42 @@ function Login() {
         navigate('/')
       })
   }
-
   return (
-    <div>
-      <h1>Login</h1>
-      <label>Email</label>
-      <input
-        value={form.email}
-        onChange={e => setForm({...form, email: e.target.value})}
-      />
-      <label>Password</label>
-      <input
-        type="password"
-        value={form.password}
-        onChange={e => setForm({...form, password: e.target.value})}
-      />
-      <button onClick={handleSubmit}>Login</button>
-    </div>
+    <main className="auth-page">
+      <section className="auth-form">
+
+        <h1 className="auth-title">Login</h1>
+
+        <form onSubmit={handleSubmit}>
+
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={form.email}
+              onChange={e => setForm({...form, email: e.target.value})}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              value={form.password}
+              onChange={e => setForm({...form, password: e.target.value})}
+            />
+          </div>
+
+          <button type="submit">
+            Login
+          </button>
+
+        </form>
+
+      </section>
+    </main>
   )
 }
 

@@ -12,7 +12,8 @@ function CreatePost() {
   })
   const [message, setMessage] = useState("")
   const navigate = useNavigate()
-  function handleSubmit() {
+  function handleSubmit(e) {
+    e.preventDefault();
     const token = localStorage.getItem('token')
     fetch('http://localhost:8080/api/posts/create', {
       method: 'POST',
@@ -29,32 +30,77 @@ function CreatePost() {
   }
 
   return (
+    <main className="post-page">
+      <section className="post-form">
 
-    <div>
-      <div><h1>New Post</h1></div>
-      <label>Title</label>
-      <input
-        value={form.title}
-        onChange={e => setForm({...form, title: e.target.value})}
-      />
-      <label>Slug</label>
-      <input
-        value={form.slug}
-        onChange={e => setForm({...form, slug: e.target.value})}
-      />
-      <label>Content</label>
-      <input
-        value={form.markdown_content}
-        onChange={e => setForm({...form, markdown_content: e.target.value})}
-      />
-      <label>Image url</label>
-      <input
-        value={form.cover_image_url}
-        onChange={e => setForm({...form, cover_image_url: e.target.value})}
-      />
-      <button onClick={handleSubmit}>Create Post</button>
-      <p>{message}</p>
-    </div>
+        <header className="post-header">
+          <h1 className="post-title">New Post</h1>
+        </header>
+
+        <form onSubmit={handleSubmit}>
+
+          <div className="form-group">
+            <label htmlFor="title">Title</label>
+            <input
+              id="title"
+              type="text"
+              value={form.title}
+              onChange={e =>
+                setForm({...form, title: e.target.value})
+              }
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="slug">Slug</label>
+            <input
+              id="slug"
+              type="text"
+              value={form.slug}
+              onChange={e =>
+                setForm({...form, slug: e.target.value})
+              }
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="content">Content</label>
+            <textarea
+              id="content"
+              rows="12"
+              value={form.markdown_content}
+              onChange={e =>
+                setForm({...form, markdown_content: e.target.value})
+              }
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="image">Image URL</label>
+            <input
+              id="image"
+              type="url"
+              value={form.cover_image_url}
+              onChange={e =>
+                setForm({...form, cover_image_url: e.target.value})
+              }
+            />
+          </div>
+
+          <div className="form-footer">
+            <button type="submit">
+              Create Post
+            </button>
+
+            {message && (
+              <p className="message">{message}</p>
+            )}
+          </div>
+
+        </form>
+
+      </section>
+    </main>
   )
 }
 
